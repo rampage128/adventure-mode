@@ -1,16 +1,10 @@
-package de.jlab.minecraft.mods.adventuremode.event;
+package de.jlab.minecraft.adventuremode.common.event;
 
-import com.google.common.io.ByteArrayDataInput;
-import com.google.common.io.ByteArrayDataOutput;
-
-import de.jlab.minecraft.mods.adventuremode.AdventureMode;
-
-import net.minecraft.client.Minecraft;
+import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.Vec3;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.DimensionType;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldProvider;
-import net.minecraftforge.common.DimensionManager;
 
 /**
  * Base class for static events with fixed position like invasions etc
@@ -19,9 +13,9 @@ import net.minecraftforge.common.DimensionManager;
  */
 public abstract class PositionalEvent extends Event {
 
-	private World world;
-	private int dimensionId;
-	private Vec3 position = Vec3.createVectorHelper(0, 0, 0);
+	private World world = null;
+	private DimensionType dimensionType = DimensionType.OVERWORLD;
+	private BlockPos position = new BlockPos(0, 0, 0);
 	
 	public PositionalEvent(EventGenerator generator) {
 		super(generator);
@@ -29,30 +23,28 @@ public abstract class PositionalEvent extends Event {
 	
 	@Override
 	public void onInit(EntityPlayer player) {
-		this.world 			= player.worldObj;
-		this.dimensionId 	= this.world.provider.dimensionId;
-		this.position 		= Vec3.createVectorHelper(player.posX, player.posY, player.posZ);
+		this.world 			= player.getEntityWorld();
+		this.dimensionType  = player.getEntityWorld().provider.getDimensionType();
+		this.position 		= new BlockPos(player.getPosition());
 	}
 
-	public final void setPosition(double x, double y, double z) {
-		position.xCoord = x;
-		position.yCoord = y;
-		position.zCoord = z;
+	protected final DimensionType getDimensionType() {
+		return this.dimensionType;
+	}
+	
+	protected final void setPosition(BlockPos pos) {
+		this.position = new BlockPos(pos);
 	}
 	
 	@Override
-	public final Vec3 getPosition() {
+	public final BlockPos getPosition() {
 		return this.position;
 	}
 	
-	public World getWorld() {
+	protected World getWorld() {
 		return this.world;
 	}
 	
-	public int getDimensionId() {
-		return this.dimensionId;
-	}
-
 	@Override
 	public abstract boolean isActive();
 
@@ -60,17 +52,25 @@ public abstract class PositionalEvent extends Event {
 	public abstract void update();
 
 	@Override
-	public void readFromPacket(ByteArrayDataInput in) {	
-		this.dimensionId = in.readInt();
-		this.setPosition(in.readInt(), in.readInt(), in.readInt());
+	public boolean affectsPlayer(EntityPlayer player) {
+		return player.getEntityWorld().provider.getDimensionType() == this.getDimensionType() && 
+				Math.sqrt(player.getPosition().distanceSq(this.getPosition())) < getRadius();
+	}
+	
+	public abstract int getRadius();
+	
+	@Override
+	public void readFromPacket(ByteBuf in) {
+		this.dimensionType = DimensionType.getById(in.readInt());
+		this.setPosition(new BlockPos(in.readInt(), in.readInt(), in.readInt()));
 	}
 	
 	@Override
-	public void writeToPacket(ByteArrayDataOutput out) {
-		out.writeInt(this.dimensionId);
-		out.writeInt((int)this.getPosition().xCoord);
-		out.writeInt((int)this.getPosition().yCoord);
-		out.writeInt((int)this.getPosition().zCoord);
+	public void writeToPacket(ByteBuf out) {
+		out.writeInt(this.dimensionType.getId());
+		out.writeInt(this.getPosition().getX());
+		out.writeInt(this.getPosition().getY());
+		out.writeInt(this.getPosition().getZ());
 	}
 	
 }

@@ -1,16 +1,16 @@
-package de.jlab.minecraft.mods.adventuremode.utils;
+package de.jlab.minecraft.adventuremode.utils;
 
-import de.jlab.minecraft.mods.adventuremode.entity.ai.EntityAIOnARampage;
+import java.util.HashMap;
+
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.EntityLivingData;
+import net.minecraft.entity.IEntityLivingData;
 import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.ai.EntityAIMoveTowardsRestriction;
-import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.Vec3;
+import net.minecraft.util.EntitySelectors;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class EntitySpawnHelper {
@@ -18,63 +18,64 @@ public class EntitySpawnHelper {
 	private RandomRange randomRange = new RandomRange();
 	private ChanceCalculator chanceCalculator = new ChanceCalculator();
 	
-	public Entity getRandomEntity(String[] entityNames, double[] entityChances, Entity defaultEntity, World world) {
+	public Entity getRandomEntity(HashMap<String, Double> entities, String defaultEntityName, World world) {
 		Entity entity = null;
-		
-		for (int i = 0; i < entityNames.length; i++) {
-			String name 	= entityNames[i];
-			double chance 	= entityChances[i]; 
+				
+		for (String name : entities.keySet()) {
+			double chance 	= entities.get(name); 
 			if (chanceCalculator.calculateChance(chance)) {
-				entity = EntityList.createEntityByName(name, world);
+				entity = EntityList.createEntityByIDFromName(new ResourceLocation(name), world);
 				break;
 			}
 		}
 		
 		// get default entity if no other could be spawned
-		if (entity == null && defaultEntity != null) {
-			return defaultEntity;
+		if (entity == null && defaultEntityName != null) {
+			return EntityList.createEntityByIDFromName(new ResourceLocation(defaultEntityName), world);
 		}
 		
 		return entity;
 	}
 	
-	public void setRandomCircleSpawnPosition(Entity entity, Vec3 center, int minRadius, int maxRadius) {
+	public void setRandomCircleSpawnPosition(Entity entity, BlockPos center, int minRadius, int maxRadius) {
+		World world = entity.getEntityWorld();
+		
 	    // create random angle between 0 to 360 degrees
 		int radius = minRadius;
 		if (minRadius != maxRadius) {
 			radius = randomRange.range(minRadius, maxRadius);
 		}
 	    int ang = randomRange.range(0, 360);
-	    double sx = center.xCoord + radius * Math.sin(Math.toRadians(ang));
-	    double sz = center.zCoord + radius * Math.cos(Math.toRadians(ang));
-	    double sy = entity.worldObj.getTopSolidOrLiquidBlock((int)sx, (int)sz) + 1;
-	    entity.setLocationAndAngles(sx, sy, sz, entity.worldObj.rand.nextFloat() * 360.0F, 0.0F);
+	    
+	    // Set position & orientation	    
+	    double sx = center.getX() + radius * Math.sin(Math.toRadians(ang));
+	    double sz = center.getZ() + radius * Math.cos(Math.toRadians(ang));
+	    double sy = world.getTopSolidOrLiquidBlock(new BlockPos((int)sx, 0, (int)sz)).getY() + 1;
+	    entity.setLocationAndAngles(sx, sy, sz, world.rand.nextFloat() * 360.0F, 0.0F);
 	}
 	
-	public void setSpawnPosition(Entity entity, Vec3 position, int spawnRadius) {
-		double sx = (double)position.xCoord + (entity.worldObj.rand.nextDouble() - entity.worldObj.rand.nextDouble()) * (double)spawnRadius;
-        double sz = (double)position.zCoord + (entity.worldObj.rand.nextDouble() - entity.worldObj.rand.nextDouble()) * (double)spawnRadius;
-        double sy = entity.worldObj.getTopSolidOrLiquidBlock((int)sx, (int)sz) + 1;
-        entity.setLocationAndAngles(sx, sy, sz, entity.worldObj.rand.nextFloat() * 360.0F, 0.0F);
+	public void setSpawnPosition(Entity entity, BlockPos position, int spawnRadius) {
+		World world = entity.getEntityWorld();
+		
+		double sx = (double)position.getX() + (world.rand.nextDouble() - world.rand.nextDouble()) * (double)spawnRadius;
+        double sz = (double)position.getZ() + (world.rand.nextDouble() - world.rand.nextDouble()) * (double)spawnRadius;
+        double sy = world.getTopSolidOrLiquidBlock(new BlockPos((int)sx, 0, (int)sz)).getY() + 1;
+        entity.setLocationAndAngles(sx, sy, sz, world.rand.nextFloat() * 360.0F, 0.0F);
 	}
 	
 	public void spawnEntityLiving(EntityLiving entityliving) {
 		entityliving.spawnExplosionParticle();
-		entityliving.worldObj.spawnEntityInWorld(entityliving);
-		entityliving.func_110161_a((EntityLivingData)null);
+		entityliving.getEntityWorld().spawnEntity(entityliving);
+		entityliving.onInitialSpawn(entityliving.getEntityWorld().getDifficultyForLocation(new BlockPos(entityliving)), (IEntityLivingData)null);
+		entityliving.playLivingSound();
 	}
 	
 	public void autoAggro(EntityLiving entityliving, int radius) {
-		EntityAIOnARampage rampageAI = new EntityAIOnARampage((EntityCreature)entityliving, EntityPlayer.class, radius);
-		entityliving.targetTasks.addTask(1, rampageAI);
-		// if only our AI is active, we assume that entity uses old AI system, hence we have to activate AI behaviour ourselves
-		if (entityliving.targetTasks.taskEntries.size() == 1 && rampageAI.shouldExecute()) {
-			rampageAI.startExecuting();
+		entityliving.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(radius);
+		EntityPlayer player = entityliving.getEntityWorld().getClosestPlayer(entityliving.posX, entityliving.posY, entityliving.posZ, radius, EntitySelectors.IS_ALIVE);
+		if (player != null) {
+			entityliving.setAttackTarget(player);
 		}
-		//entityliving.targetTasks.addTask(1, new EntityAINearestAttackableTarget((EntityCreature)entityliving, EntityPlayer.class, 0, false, false));
-		//if (entityliving instanceof EntityPigZombie) {
-			//entityliving.attackEntityFrom(DamageSource.causePlayerDamage(closestPlayer), 0f); // FIXME MOBS STICK IN FLOOR AFTER CALLING THIS?!
-		//}
 	}
 	
 }

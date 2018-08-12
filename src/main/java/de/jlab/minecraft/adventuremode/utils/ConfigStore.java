@@ -1,12 +1,15 @@
-package de.jlab.minecraft.mods.adventuremode.utils;
+package de.jlab.minecraft.adventuremode.utils;
 
 import java.util.HashMap;
 
-import net.minecraftforge.common.Configuration;
-import net.minecraftforge.common.Property;
+import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.common.config.Property;
+
 
 public abstract class ConfigStore {
 
+	public static final String CATEGORY_ITEMS = "items";
+	
 	private Configuration config = null;
 	private HashMap<String, Object> configmap = new HashMap<String, Object>();
 	
@@ -19,8 +22,8 @@ public abstract class ConfigStore {
 	public abstract String getDefaultCategory();
 	
 	protected void readItemId(String name, int defaultValue, String description) {
-		Property property = this.config.getItem(name, defaultValue, description);
-		this.configmap.put(Configuration.CATEGORY_ITEM + "." + name, property.getInt(defaultValue));
+		Property property = this.config.get(ConfigStore.CATEGORY_ITEMS, name, (Integer)defaultValue, description);
+		this.configmap.put(ConfigStore.CATEGORY_ITEMS + "." + name, property.getInt(defaultValue));
 	}
 	
 	protected void readProperty(String category, String name, Object defaultValue, String description) {				
@@ -51,7 +54,7 @@ public abstract class ConfigStore {
 			throw new UnsupportedOperationException("Cannot read property \"" + category + "." + name + "\": Type " + defaultValue.getClass().getName() + " is not supported!");
 		}
 		
-		property.comment = description;
+		property.setComment(description);
 	}
 	
 	public Object getProperty(String name) {

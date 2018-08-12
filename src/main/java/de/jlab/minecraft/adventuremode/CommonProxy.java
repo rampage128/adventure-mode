@@ -1,8 +1,10 @@
-package de.jlab.minecraft.mods.adventuremode;
+package de.jlab.minecraft.adventuremode;
 
-public class CommonProxy {
-    // Client stuff
-    public void registerRenderers() {
-    	// Nothing here as the server doesn't render graphics or entities!
-    }
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
+
+public abstract class CommonProxy {
+    public abstract void init(FMLInitializationEvent event);
+    
+    public abstract void serverStarting(FMLServerStartingEvent event);
 }

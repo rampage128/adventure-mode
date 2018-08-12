@@ -1,61 +1,50 @@
-package de.jlab.minecraft.mods.adventuremode.item;
+package de.jlab.minecraft.adventuremode.common.item;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-import de.jlab.minecraft.mods.adventuremode.AdventureMode;
-import de.jlab.minecraft.mods.adventuremode.utils.ChanceCalculator;
-import net.minecraft.block.Block;
-import net.minecraft.block.material.Material;
-import net.minecraft.client.renderer.texture.IconRegister;
+
+import de.jlab.minecraft.adventuremode.utils.ChanceCalculator;
+import de.jlab.minecraft.adventuremode.utils.Easing;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.EnumToolMaterial;
+import net.minecraft.init.Blocks;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemHoe;
-import net.minecraft.item.ItemPickaxe;
-import net.minecraft.item.ItemSpade;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumActionResult;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class ItemAdventureHoe extends ItemHoe {
 
 	private ChanceCalculator cc = new ChanceCalculator();
 	
-	public ItemAdventureHoe(int i, EnumToolMaterial enumToolMaterial) {
-		super(i, enumToolMaterial);
-		this.setMaxDamage(enumToolMaterial.getMaxUses() * 5);
+	public ItemAdventureHoe(Item.ToolMaterial material) {
+		super(material);
+		this.setMaxDamage(material.getMaxUses() * 5);
 	}
 
-	/**
-	 * Emulate worn out effect
-	 */
-	public boolean onItemUse(ItemStack par1ItemStack, EntityPlayer par2EntityPlayer, World par3World, int par4, int par5, int par6, int par7, float par8, float par9, float par10) {
-		// get dirt blockid
-		int i1 = Block.dirt.blockID;		
-		boolean tiled = super.onItemUse(par1ItemStack, par2EntityPlayer, par3World, par4, par5, par6, par7, par8, par9, par10);
+    public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+    	ItemStack itemstack = player.getHeldItem(hand);
+    		
+		EnumActionResult originalResult = super.onItemUse(player, worldIn, pos, hand, facing, hitX, hitY, hitZ);
 		
 		// if chance is given fail the tiling of the block (turn it into dirt!)
-		if (getDamage(par1ItemStack) > 0 && !cc.calculateChance(ItemHandler.easeCircular((float)getDamage(par1ItemStack), (float)getMaxDamage(par1ItemStack)+1) * 100f)) {
-			par3World.setBlock(par4, par5, par6, i1);
-			return false;
+		if (getDamage(itemstack) > 0 && !cc.calculateChance(Easing.circular((float)getDamage(itemstack), (float)getMaxDamage(itemstack)+1) * 100f)) {
+			if (!worldIn.isRemote) {
+	            worldIn.setBlockState(pos, Blocks.DIRT.getDefaultState(), 11);
+			}
+			return EnumActionResult.FAIL;
 		}
 		
-		return tiled;
+		return originalResult;
 	}
 	
-    /**
-     * Returns the strength of the stack against a given block. 1.0F base, (Quality+1)*2 if correct blocktype, 1.5F if
-     * sword
-     */
 	@Override
-    public float getStrVsBlock(ItemStack par1ItemStack, Block par2Block) {
-        float result = super.getStrVsBlock(par1ItemStack, par2Block);
+	public float getDestroySpeed(ItemStack stack, IBlockState state) {
+        float result = super.getDestroySpeed(stack, state);
                 
-        return getDamage(par1ItemStack) < 1 ? result : result * ItemHandler.easeCircular((float)getDamage(par1ItemStack), (float)getMaxDamage(par1ItemStack)+1);
+        return getDamage(stack) < 1 ? result : result * Easing.circular((float)getDamage(stack), (float)getMaxDamage(stack)+1);
     }
-	
-	@SideOnly(Side.CLIENT)
-	@Override
-    public void registerIcons(IconRegister par1IconRegister) {
-        this.itemIcon = par1IconRegister.registerIcon(AdventureMode.MODID.toLowerCase() + ":" + getUnlocalizedName().replace("item.", "").toLowerCase());
-    }
-	
+		
 }

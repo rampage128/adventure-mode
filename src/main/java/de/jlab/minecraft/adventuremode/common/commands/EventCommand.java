@@ -1,19 +1,18 @@
-package de.jlab.minecraft.mods.adventuremode.commands;
+package de.jlab.minecraft.adventuremode.common.commands;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import net.minecraft.command.ICommand;
+import de.jlab.minecraft.adventuremode.AdventureMode;
+import de.jlab.minecraft.adventuremode.common.event.EventScheduler;
+import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
-import net.minecraft.command.WrongUsageException;
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.ChatMessageComponent;
-import de.jlab.minecraft.mods.adventuremode.AdventureMode;
-import de.jlab.minecraft.mods.adventuremode.event.EventGenerator;
-import de.jlab.minecraft.mods.adventuremode.event.EventHandler;
+import net.minecraft.util.text.TextComponentString;
 
-public class EventCommand implements ICommand {
+
+public class EventCommand extends CommandBase {
 
 	public static final String COMMAND_START 	= "start";
 	public static final String COMMAND_STOP 	= "stop";
@@ -26,84 +25,79 @@ public class EventCommand implements ICommand {
 	}
 	
 	@Override
-	public int compareTo(Object arg0) {
-		// TODO Auto-generated method stub WTF?
-		return 0;
-	}
-
-	@Override
-	public String getCommandName() {
+	public String getName() {
 		return "event";
 	}
 
 	@Override
-	public String getCommandUsage(ICommandSender icommandsender) {
+	public String getUsage(ICommandSender icommandsender) {
 		return "/event <start|stop> <type> [<player>]";
 	}
 
 	@Override
-	public List getCommandAliases() {
-		return aliases;
+	public List<String> getAliases() {
+		return this.aliases;
 	}
 
 	@Override
-	public void processCommand(ICommandSender icommandsender, String[] astring) {
+	public void execute(MinecraftServer server, ICommandSender sender, String[] astring) {
 		if (astring.length < 1) {
-			throw new WrongUsageException(this.getCommandUsage(icommandsender), new Object[0]);
+			sender.sendMessage(new TextComponentString(this.getUsage(sender)));
 		} else {
 			if (COMMAND_START.equalsIgnoreCase(astring[0])) {
-				this.startEvent(icommandsender, astring);
+				this.startEvent(sender, astring);
 			} else if (COMMAND_STOP.equalsIgnoreCase(astring[0])) {
-				this.stopEvent(icommandsender, astring);
+				this.stopEvent(sender, astring);
 			} else {
-				throw new WrongUsageException("Could not find action [" + astring[0] + "]", new Object[0]);
+				sender.sendMessage(new TextComponentString("Could not find action [" + astring[0] + "]"));
 			}
 		}
 	}
 	
-	private void startEvent(ICommandSender icommandsender, String[] astring) {
+	private void startEvent(ICommandSender sender, String[] astring) {
 		if (astring.length < 2) {
-			throw new WrongUsageException(this.getCommandUsage(icommandsender), new Object[0]);
+			sender.sendMessage(new TextComponentString(this.getUsage(sender)));
 		} else {
-			EntityPlayerMP usePlayer = null;			
+			EntityPlayer usePlayer = null;			
 			if (astring.length == 2) {
-				usePlayer = (EntityPlayerMP)icommandsender;				
+				usePlayer = (EntityPlayer)sender;				
 			} else {
-				List playerList = MinecraftServer.getServer().getConfigurationManager().playerEntityList;
+				List<EntityPlayer> playerList = sender.getEntityWorld().playerEntities;
 				for (int i = 0; i < playerList.size(); i++) {
-					EntityPlayerMP player = (EntityPlayerMP)playerList.get(i);
-					if (player.username.equalsIgnoreCase(astring[2])) {
+					EntityPlayer player = playerList.get(i);
+					if (player.getName().equalsIgnoreCase(astring[2])) {
 						usePlayer = player;
 					}
 				}
 				
 				if (usePlayer == null) {
-					throw new WrongUsageException("Could not find player with name [" + astring[2] + "]!", new Object[0]);
+					sender.sendMessage(new TextComponentString("Could not find player with name [" + astring[2] + "]!"));
 				}
 			}
 			
-			if (AdventureMode.instance.getEventHandler().getEventGenerator(astring[1]) == null) {
-				throw new WrongUsageException("Could not find event type " + astring[1], new Object[1]);
+			if (AdventureMode.instance.getEventScheduler().getEventGenerator(astring[1]) == null) {
+				sender.sendMessage(new TextComponentString("Could not find event type " + astring[1]));
 			} else {
-				icommandsender.sendChatToPlayer(ChatMessageComponent.func_111066_d("Craeting event [" + astring[1] + "] at player [" + usePlayer.username + "]"));
-				AdventureMode.instance.getEventHandler().startEvent(astring[1], usePlayer);
+				sender.sendMessage(new TextComponentString("Craeting event [" + astring[1] + "] at player [" + usePlayer.getName() + "]"));
+				AdventureMode.instance.getEventScheduler().startEvent(astring[1], usePlayer);
 			}
 		}
 	}
 	
-	private void stopEvent(ICommandSender icommandsender, String[] astring) {
+	private void stopEvent(ICommandSender sender, String[] astring) {
 		if (astring.length < 2) {
-			throw new WrongUsageException(this.getCommandUsage(icommandsender), new Object[0]);
+			sender.sendMessage(new TextComponentString(this.getUsage(sender)));
 		} else {
-			if (!EventHandler.EVENTTYPE_ALL.equalsIgnoreCase(astring[1]) && AdventureMode.instance.getEventHandler().getEventGenerator(astring[1]) == null) {
-				throw new WrongUsageException("Could not find event type " + astring[1], new Object[0]);
+			if (!EventScheduler.EVENTTYPE_ALL.equalsIgnoreCase(astring[1]) && AdventureMode.instance.getEventScheduler().getEventGenerator(astring[1]) == null) {
+				sender.sendMessage(new TextComponentString("Could not find event type " + astring[1]));
 			} else {
-				AdventureMode.instance.getEventHandler().stopEvents(astring[1]);
-				icommandsender.sendChatToPlayer(ChatMessageComponent.func_111066_d("Stopping all events of type [" + astring[1] + "]!"));
+				AdventureMode.instance.getEventScheduler().stopEvents(astring[1]);
+				sender.sendMessage(new TextComponentString("Stopping all events of type [" + astring[1] + "]!"));
 			}
 		}	
 	}
 
+	/*
 	@Override
 	public boolean canCommandSenderUseCommand(ICommandSender icommandsender) {
 		return icommandsender.canCommandSenderUseCommand(4, this.getCommandName());
@@ -118,5 +112,5 @@ public class EventCommand implements ICommand {
 	public boolean isUsernameIndex(String[] astring, int i) {
 		return false;
 	}
-	
+	*/	
 }

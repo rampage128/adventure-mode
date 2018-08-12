@@ -1,38 +1,23 @@
-package de.jlab.minecraft.mods.adventuremode.item;
+package de.jlab.minecraft.adventuremode.common.item;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-import de.jlab.minecraft.mods.adventuremode.AdventureMode;
-import net.minecraft.block.Block;
-import net.minecraft.block.material.Material;
-import net.minecraft.client.renderer.texture.IconRegister;
-import net.minecraft.item.EnumToolMaterial;
-import net.minecraft.item.ItemPickaxe;
+import de.jlab.minecraft.adventuremode.utils.Easing;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemSpade;
 import net.minecraft.item.ItemStack;
 
 public class ItemAdventureShovel extends ItemSpade {
 
-	public ItemAdventureShovel(int i, EnumToolMaterial enumToolMaterial) {
-		super(i, enumToolMaterial);
-		this.setMaxDamage(enumToolMaterial.getMaxUses() * 4);
+	public ItemAdventureShovel(Item.ToolMaterial material) {
+		super(material);
+		this.setMaxDamage(material.getMaxUses() * 4);
 	}
 
-    /**
-     * Returns the strength of the stack against a given block. 1.0F base, (Quality+1)*2 if correct blocktype, 1.5F if
-     * sword
-     */
 	@Override
-    public float getStrVsBlock(ItemStack par1ItemStack, Block par2Block) {
-        float result = super.getStrVsBlock(par1ItemStack, par2Block);
+	public float getDestroySpeed(ItemStack stack, IBlockState state) {
+        float result = super.getDestroySpeed(stack, state);
                 
-        return getDamage(par1ItemStack) < 1 ? result : result * ItemHandler.easeCircular((float)getDamage(par1ItemStack), (float)getMaxDamage(par1ItemStack)+1);
-    }
-	
-	@SideOnly(Side.CLIENT)
-	@Override
-    public void registerIcons(IconRegister par1IconRegister) {
-        this.itemIcon = par1IconRegister.registerIcon(AdventureMode.MODID.toLowerCase() + ":" + getUnlocalizedName().replace("item.", "").toLowerCase());
+        return getDamage(stack) < 1 ? result : result * Easing.circular((float)getDamage(stack), (float)getMaxDamage(stack)+1);
     }
 	
 }

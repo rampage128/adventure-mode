@@ -1,36 +1,19 @@
-package de.jlab.minecraft.mods.adventuremode.event.invasion;
+package de.jlab.minecraft.adventuremode.common.event.invasion;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 
-import com.google.common.io.ByteArrayDataInput;
-import com.google.common.io.ByteArrayDataOutput;
-
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.relauncher.FMLRelaunchLog;
-import cpw.mods.fml.relauncher.Side;
-
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.EntityRenderer;
-import net.minecraft.client.renderer.entity.RenderManager;
+import de.jlab.minecraft.adventuremode.common.config.AdventureConfig;
+import de.jlab.minecraft.adventuremode.common.event.EventGenerator;
+import de.jlab.minecraft.adventuremode.common.event.PositionalEvent;
+import de.jlab.minecraft.adventuremode.utils.EntitySpawnHelper;
+import de.jlab.minecraft.adventuremode.utils.RandomRange;
+import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.EntityLivingData;
-import net.minecraft.entity.ai.EntityAIBase;
-import net.minecraft.entity.ai.EntityAIMoveTowardsTarget;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.Vec3;
-import net.minecraft.world.World;
-import net.minecraft.world.WorldProvider;
-import net.minecraftforge.common.DimensionManager;
-import de.jlab.minecraft.mods.adventuremode.AdventureMode;
-import de.jlab.minecraft.mods.adventuremode.event.Event;
-import de.jlab.minecraft.mods.adventuremode.event.EventGenerator;
-import de.jlab.minecraft.mods.adventuremode.event.PositionalEvent;
-import de.jlab.minecraft.mods.adventuremode.utils.ChanceCalculator;
-import de.jlab.minecraft.mods.adventuremode.utils.EntitySpawnHelper;
-import de.jlab.minecraft.mods.adventuremode.utils.RandomRange;
+import net.minecraft.world.EnumSkyBlock;
 
 public class InvasionEvent extends PositionalEvent {
 
@@ -43,7 +26,6 @@ public class InvasionEvent extends PositionalEvent {
 	private int kills 			= 0;
 	
 	private ArrayList<EntityLiving> monsterList = new ArrayList<EntityLiving>();
-	private ChanceCalculator monsterChanceCalculator = new ChanceCalculator();
 	
 	private EntitySpawnHelper spawnHelper = new EntitySpawnHelper();
 	
@@ -56,18 +38,18 @@ public class InvasionEvent extends PositionalEvent {
 	@Override
 	public void onInit(EntityPlayer player) {
 		this.limittime = randomRange.weightedRange(
-				(Integer)this.getConfigStore().getProperty(InvasionEventConfigStore.CATEGORY, InvasionEventConfigStore.PROPERTY_LIMITTIMEMIN), 
-				(Integer)this.getConfigStore().getProperty(InvasionEventConfigStore.CATEGORY, InvasionEventConfigStore.PROPERTY_LIMITTIMEMAX), 
+				AdventureConfig.events.invasion.timeLimitMin, 
+				AdventureConfig.events.invasion.timeLimitMax, 
 				70, 30) * 20;
 		
 		this.limitkills = randomRange.weightedRange(
-				(Integer)this.getConfigStore().getProperty(InvasionEventConfigStore.CATEGORY, InvasionEventConfigStore.PROPERTY_LIMITKILLMIN), 
-				(Integer)this.getConfigStore().getProperty(InvasionEventConfigStore.CATEGORY, InvasionEventConfigStore.PROPERTY_LIMITKILLMAX), 
+				AdventureConfig.events.invasion.killLimitMin, 
+				AdventureConfig.events.invasion.killLimitMax,  
 				30, 70);
 		
 		this.monsterCount = randomRange.weightedRange(
-				(Integer)this.getConfigStore().getProperty(InvasionEventConfigStore.CATEGORY, InvasionEventConfigStore.PROPERTY_MONSTERSMIN), 
-				(Integer)this.getConfigStore().getProperty(InvasionEventConfigStore.CATEGORY, InvasionEventConfigStore.PROPERTY_MONSTERSMAX), 
+				AdventureConfig.events.invasion.monsterLimitMin, 
+				AdventureConfig.events.invasion.monsterLimitMax, 
 				30, 70);
 		
 		super.onInit(player);
@@ -86,7 +68,7 @@ public class InvasionEvent extends PositionalEvent {
 		}
 		
 		// is inactive if conditions vanish (night time, rain, thunderstorm)
-		if (this.getPlayer().worldObj.isDaytime() && !this.getPlayer().worldObj.isRaining() && !this.getPlayer().worldObj.isThundering()) {
+		if (this.getWorld().isDaytime() && !this.getWorld().isRaining() && !this.getWorld().isThundering()) {
 			return false;
 		}
 		
@@ -104,7 +86,7 @@ public class InvasionEvent extends PositionalEvent {
 	public void update() {		
 		// spawn some monsters
 		for (int i = 0; i < 20; i++) {
-			if (this.monsterList.size() < this.monsterCount) {
+			if (this.monsterList.size() < this.monsterCount && this.monsterList.size() < this.limitkills - this.kills) {
 				this.spawnMonster();
 			}
 		}
@@ -114,7 +96,9 @@ public class InvasionEvent extends PositionalEvent {
 			EntityLiving monster = iterator.next();
 			if (monster.isDead) {
 				iterator.remove();
-				this.kills++;
+				if (monster.getLastDamageSource() != null) { //  && monster.getLastDamageSource().getTrueSource() instanceof EntityPlayer
+					this.kills++;
+				}
 			}
 		}		
 		
@@ -124,11 +108,10 @@ public class InvasionEvent extends PositionalEvent {
 	/**
 	 * Spawns a random monster
 	 */
-	private void spawnMonster() {				
+	private void spawnMonster() {						
 		// create entity by chance
-		String[] monsterTypes 	= (String[])this.getConfigStore().getProperty(InvasionEventConfigStore.CATEGORY, InvasionEventConfigStore.PROPERTY_MONSTERTYPES);
-		double[] monsterChances = (double[])this.getConfigStore().getProperty(InvasionEventConfigStore.CATEGORY, InvasionEventConfigStore.PROPERTY_MONSTERCHANCES);
-		Entity entity = this.spawnHelper.getRandomEntity(monsterTypes, monsterChances, EntityList.createEntityByName(monsterTypes[0], this.getPlayer().worldObj), this.getPlayer().worldObj);		
+		HashMap<String, Double> monsterTypes = AdventureConfig.events.invasion.monsterTypes;
+		Entity entity = this.spawnHelper.getRandomEntity(monsterTypes, "minecraft:zombie", this.getWorld());		
 		
 		EntityLiving entityliving = entity instanceof EntityLiving ? (EntityLiving)entity : null;
 		
@@ -138,15 +121,18 @@ public class InvasionEvent extends PositionalEvent {
 		}
 
 		// compute spawn position
-		int maxSpawnRadius = (Integer)this.getConfigStore().getProperty(InvasionEventConfigStore.CATEGORY, InvasionEventConfigStore.PROPERTY_SPAWNRADIUSMAX);
-		this.spawnHelper.setRandomCircleSpawnPosition(entity, this.getPosition(), (Integer)this.getConfigStore().getProperty(InvasionEventConfigStore.CATEGORY, InvasionEventConfigStore.PROPERTY_SPAWNRADIUSMIN), maxSpawnRadius);
+		int maxSpawnRadius = AdventureConfig.events.invasion.spawnRadiusMax;
+		int minSpawnRadius = AdventureConfig.events.invasion.spawnRadiusMin;
+		this.spawnHelper.setRandomCircleSpawnPosition(entity, this.getPosition(), minSpawnRadius, maxSpawnRadius);
 		
-		int l = this.getPlayer().worldObj.getBlockLightValue(entity.chunkCoordX, entity.chunkCoordY, entity.chunkCoordZ);
+		System.out.println("Spawning monster " + (entityliving == null ? "Unknown" : entityliving.getName()));
+		
+		int l = this.getWorld().getLightFor(EnumSkyBlock.BLOCK, entity.getPosition().down());
 		// abort spawning if conditions are not met and light level is above 10 (thunderstorm)
 		if (!entityliving.getCanSpawnHere() || l > 10) {
 			return;
 		}
-		
+				
 		// spawn monster
 		this.spawnHelper.spawnEntityLiving(entityliving);
 		
@@ -160,11 +146,11 @@ public class InvasionEvent extends PositionalEvent {
 	@Override
 	public void end() {
 		// despawn all monsters if desired
-		if ((Boolean)this.getConfigStore().getProperty(InvasionEventConfigStore.CATEGORY, InvasionEventConfigStore.PROPERTY_DESPAWNAFTER)) {
+		if (AdventureConfig.events.invasion.despawnOnEnd) {
 			for (Iterator<EntityLiving> iterator = this.monsterList.iterator(); iterator.hasNext(); ) {
 				EntityLiving monster = iterator.next();
 				monster.spawnExplosionParticle(); // TODO EFFECT WONT PLAY!
-				monster.worldObj.removeEntity(monster);
+				monster.getEntityWorld().removeEntity(monster);
 				if (monster.isDead) {
 					iterator.remove();
 				}
@@ -175,11 +161,8 @@ public class InvasionEvent extends PositionalEvent {
 	}
 
 	@Override
-	public boolean affectsPlayer(EntityPlayer player) {		
-		int radius = (Integer)this.getConfigStore().getProperty(InvasionEventConfigStore.CATEGORY, InvasionEventConfigStore.PROPERTY_SPAWNRADIUSMAX);
-		Vec3 playerpos = Vec3.createVectorHelper(player.posX, player.posY, player.posZ);
-		
-		return player.worldObj.provider.dimensionId == this.getDimensionId() && (playerpos.distanceTo(this.getPosition()) < radius * 2);
+	public int getRadius() {		
+		return AdventureConfig.events.invasion.spawnRadiusMax * 2;
 	}
 	
 	@Override
@@ -192,7 +175,7 @@ public class InvasionEvent extends PositionalEvent {
 	//////////////////
 	
 	@Override
-	public void readFromPacket(ByteArrayDataInput in) {
+	public void readFromPacket(ByteBuf in) {
 		super.readFromPacket(in);
 		this.startTime = in.readLong();
 		this.timeleft = in.readInt();
@@ -203,7 +186,7 @@ public class InvasionEvent extends PositionalEvent {
 	}
 
 	@Override
-	public void writeToPacket(ByteArrayDataOutput out) {
+	public void writeToPacket(ByteBuf out) {
 		super.writeToPacket(out);
 		out.writeLong(this.startTime);
 		out.writeInt(this.timeleft);

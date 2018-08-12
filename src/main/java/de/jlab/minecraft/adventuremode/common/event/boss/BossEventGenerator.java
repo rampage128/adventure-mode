@@ -1,13 +1,9 @@
-package de.jlab.minecraft.mods.adventuremode.event.boss;
+package de.jlab.minecraft.adventuremode.common.event.boss;
 
-import java.util.Calendar;
-
+import de.jlab.minecraft.adventuremode.common.config.AdventureConfig;
+import de.jlab.minecraft.adventuremode.common.event.Event;
+import de.jlab.minecraft.adventuremode.common.event.EventGenerator;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraftforge.common.Configuration;
-import de.jlab.minecraft.mods.adventuremode.event.Event;
-import de.jlab.minecraft.mods.adventuremode.event.EventGenerator;
-import de.jlab.minecraft.mods.adventuremode.event.invasion.InvasionEventConfigStore;
-import de.jlab.minecraft.mods.adventuremode.utils.ConfigStore;
 
 public class BossEventGenerator extends EventGenerator {
 
@@ -21,31 +17,35 @@ public class BossEventGenerator extends EventGenerator {
 	@Override
 	public double getChance(EntityPlayer player) {
 		// if we did check already and cooldown is not over yet we return 0 chance!
-		if (lastBossEvent != 0 && player.worldObj.getTotalWorldTime() - lastBossEvent < (Integer)this.getConfigStore().getProperty(BossEventConfigStore.CATEGORY, BossEventConfigStore.PROPERTY_COOLDOWN)) {
+		if (lastBossEvent != 0 && player.getEntityWorld().getTotalWorldTime() - lastBossEvent < AdventureConfig.events.boss.cooldown) {
 			return 0;
 		}
 				
-		lastBossEvent = player.worldObj.getTotalWorldTime();
+		lastBossEvent = player.getEntityWorld().getTotalWorldTime();
 		
-		// get moon fullness
-		float moonfullness = player.worldObj.func_130001_d();
+		// get world state
+		float moonFullness = player.getEntityWorld().getCurrentMoonPhaseFactor();
+		boolean isFullMoon = moonFullness == 1;
+		boolean isThundering = player.getEntityWorld().isThundering();
         
 		// retrieve chances from config
-		double[] chances = (double[])this.getConfigStore().getProperty(BossEventConfigStore.CATEGORY, BossEventConfigStore.PROPERTY_CHANCES);
+		double[] chances = AdventureConfig.events.boss.chances; //(double[])this.getConfigStore().getProperty(BossEventConfigStore.CATEGORY, BossEventConfigStore.PROPERTY_CHANCES);
 		
 		// get base chance
 		double chance = chances[0];
         
         // get moon phase chance multiplied by moon fullness
-      	chance = Math.max(chance, chances[1] * moonfullness);
+		if (moonFullness > 0.25f) {
+			chance = Math.max(chance, chances[1] * moonFullness);
+		}
       	
         // get thunderstorm chance
-        if (player.worldObj.isThundering()) {
-        	chance = Math.max(chance, chances[2]);
+        if (isThundering) {
+        	chance = chances[2];
         }
         
         // get chance for thunderstorm & full moon
-        if (moonfullness == 1 && player.worldObj.isThundering()) {
+        if (isFullMoon && isThundering) {
         	chance = chances[3];
         }
 		
@@ -53,14 +53,7 @@ public class BossEventGenerator extends EventGenerator {
 	}
 
 	@Override
-	protected void onEventStarted(Event event, EntityPlayer player) {
-
-	}
-
-	@Override
-	protected ConfigStore createConfigStore(Configuration config) {
-		return new BossEventConfigStore(config);
-	}
+	protected void onEventStarted(Event event, EntityPlayer player) {}
 
 	@Override
 	public String getType() {

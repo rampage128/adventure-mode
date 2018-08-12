@@ -1,31 +1,29 @@
-package de.jlab.minecraft.mods.adventuremode.event.invasion;
+package de.jlab.minecraft.adventuremode.common.event.invasion;
 
-import org.lwjgl.opengl.GL11;
-
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.multiplayer.WorldClient;
-import net.minecraft.client.renderer.Tessellator;
 import net.minecraftforge.client.IRenderHandler;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class InvasionSkyRenderer extends IRenderHandler {
 
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void render(float partialTicks, WorldClient world, Minecraft mc) {
+		/*
 	    ScaledResolution res = new ScaledResolution(mc.gameSettings, mc.displayWidth, mc.displayHeight);
 		int uiWidth 	= res.getScaledWidth();
 		int uiHeight 	= res.getScaledHeight();
 		
 		Gui.drawRect(0, 0, uiWidth, uiHeight, 0xFFFFFF);
+		*/
 	}
 	
     /**
-     * Draws a solid color rectangle with the specified coordinates and color. Args: x1, y1, x2, y2, color
+     *  Draws a solid color rectangle with the specified coordinates and color. Args: x1, y1, x2, y2, color 
      */
+	/*
     public static void drawRect(int par0, int par1, int par2, int par3, int par4) {
         int j1;
 
@@ -61,5 +59,5 @@ public class InvasionSkyRenderer extends IRenderHandler {
         GL11.glEnable(GL11.GL_TEXTURE_2D);
         GL11.glDisable(GL11.GL_BLEND);
     }
-
+    */
 }

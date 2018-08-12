@@ -1,7 +1,8 @@
-package de.jlab.minecraft.mods.adventuremode.utils;
+package de.jlab.minecraft.adventuremode.utils;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
+import net.minecraft.util.ResourceLocation;
 
 /*
  * Keeps track of an entity respawn
@@ -24,7 +25,7 @@ public class EntityRespawn {
 	}
 	
 	public boolean updateCheck() {
-		return this.entity.worldObj.getTotalWorldTime() - this.dyingTime >= this.respawnTime;
+		return this.entity.getEntityWorld().getTotalWorldTime() - this.dyingTime >= this.respawnTime;
 	}
 	
 	public Entity getEntity() {
@@ -32,15 +33,15 @@ public class EntityRespawn {
 	}
 	
 	public int ticksLeft() {
-		return (int)(this.respawnTime - (this.entity.worldObj.getTotalWorldTime() - this.dyingTime));
+		return (int)(this.respawnTime - (this.entity.getEntityWorld().getTotalWorldTime() - this.dyingTime));
 	}
 	
 	public void resetTime() {
-		this.dyingTime = entity.worldObj.getTotalWorldTime();
+		this.dyingTime = entity.getEntityWorld().getTotalWorldTime();
 	}
 	
 	public Entity getNewEntity() {
-		return EntityList.createEntityByName(EntityList.getEntityString(this.entity), this.entity.worldObj);
+		return EntityList.createEntityByIDFromName(new ResourceLocation(this.entity.getName()), this.entity.getEntityWorld());
 	}
 	
 }

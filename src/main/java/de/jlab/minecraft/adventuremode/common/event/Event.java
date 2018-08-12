@@ -1,31 +1,20 @@
-package de.jlab.minecraft.mods.adventuremode.event;
+package de.jlab.minecraft.adventuremode.common.event;
 
-import com.google.common.io.ByteArrayDataInput;
-import com.google.common.io.ByteArrayDataOutput;
-
-import de.jlab.minecraft.mods.adventuremode.event.invasion.InvasionEventConfigStore;
-import de.jlab.minecraft.mods.adventuremode.utils.ConfigStore;
-import net.minecraft.client.Minecraft;
+import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.Vec3;
+import net.minecraft.util.math.BlockPos;
 
 public abstract class Event {
 
 	private EventGenerator generator;
-	private ConfigStore configStore;
 	private EntityPlayer player;
 	
 	public Event(EventGenerator generator) {
 		this.generator = generator;
-		this.configStore = generator.getConfigStore();
 	}
 	
 	public EventGenerator getGenerator() {
 		return this.generator;
-	}
-	
-	protected ConfigStore getConfigStore() {
-		return this.configStore;
 	}
 	
 	protected EntityPlayer getPlayer() {
@@ -51,7 +40,7 @@ public abstract class Event {
 	 * Return the position of this event
 	 * @return
 	 */
-	public abstract Vec3 getPosition();
+	public abstract BlockPos getPosition();
 
 	/**
 	 * Return if this event is Active
@@ -88,11 +77,11 @@ public abstract class Event {
 	/**
 	 * Read this event from a network packet
 	 */
-	public abstract void readFromPacket(ByteArrayDataInput in);
+	public abstract void readFromPacket(ByteBuf in);
 	
 	/**
 	 * Write this event to a network packet 
 	 */
-	public abstract void writeToPacket(ByteArrayDataOutput out);
+	public abstract void writeToPacket(ByteBuf out);
 	
 }

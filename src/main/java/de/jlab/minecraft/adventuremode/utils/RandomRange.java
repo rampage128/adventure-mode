@@ -1,4 +1,4 @@
-package de.jlab.minecraft.mods.adventuremode.utils;
+package de.jlab.minecraft.adventuremode.utils;
 
 import java.util.Random;
 
