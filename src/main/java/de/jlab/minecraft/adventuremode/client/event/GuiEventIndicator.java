@@ -1,9 +1,9 @@
-package de.jlab.minecraft.mods.adventuremode.event;
+package de.jlab.minecraft.adventuremode.client.event;
 
 import java.util.ArrayList;
 
-import de.jlab.minecraft.mods.adventuremode.AdventureMode;
-import de.jlab.minecraft.mods.adventuremode.client.ClientProxy;
+import de.jlab.minecraft.adventuremode.AdventureMode;
+import de.jlab.minecraft.adventuremode.common.event.Event;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
@@ -11,9 +11,7 @@ import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
-import net.minecraftforge.client.model.AdvancedModelLoader;
-import net.minecraftforge.event.EventPriority;
-import net.minecraftforge.event.ForgeSubscribe;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class GuiEventIndicator extends Gui {
 	
@@ -32,7 +30,7 @@ public class GuiEventIndicator extends Gui {
 	// This event is called by GuiIngameForge during each frame by
 	// GuiIngameForge.pre() and GuiIngameForce.post().
 	//
-	@ForgeSubscribe(priority = EventPriority.NORMAL)
+	@SubscribeEvent
 	public void onRenderEventIndicator(RenderGameOverlayEvent event) {
 	
 		// 
@@ -41,13 +39,13 @@ public class GuiEventIndicator extends Gui {
 	    // that case, the portion of rendering which this event represents will be canceled.
 	    // We want to draw *after* the experience bar is drawn, so we make sure isCancelable() returns
 	    // false and that the eventType represents the ExperienceBar event.
-	    if(event.isCancelable() || event.type != ElementType.EXPERIENCE) {      
+	    if(event.isCancelable() || event.getType() != ElementType.EXPERIENCE) {      
 	    	return;
 	    }
 	        
 	    // get events
 	    StringBuilder textBuilder = new StringBuilder();
-		ArrayList<Event> affectingEventList = AdventureMode.instance.getEventHandler().getAffectingEvents(this.mc.thePlayer);
+		ArrayList<Event> affectingEventList = AdventureMode.instance.getEventScheduler().getAffectingEvents(this.mc.player);
 	    for (Event adventureEvent : affectingEventList) {
     		textBuilder.append(adventureEvent.getLabelText()).append("\n");
 	    }
@@ -57,17 +55,18 @@ public class GuiEventIndicator extends Gui {
 	    	return;
 	    } 
 	    
-	    ScaledResolution res = new ScaledResolution(this.mc.gameSettings, this.mc.displayWidth, this.mc.displayHeight);
+	    ScaledResolution res = new ScaledResolution(this.mc);
 		int uiWidth 	= res.getScaledWidth();
 		int uiHeight 	= res.getScaledHeight();
 		//mc.entityRenderer.setupOverlayRendering();
 				
 		drawEventBox(uiWidth, uiHeight);
-		drawAreaText(textBuilder.toString(), uiWidth - 160 + 8, 40, 146, 48, 0xFFFFFF, 0, this.mc.fontRenderer);		
+		drawAreaText(textBuilder.toString(), uiWidth - 160 + 8, 40, 146, 48, 0xFFFFFF, 0, this.mc.fontRenderer);
+		
 	}
 	
 	private void drawEventBox(int screenWidth, int screenHeight) {
-		this.mc.func_110434_K().func_110577_a(dialog_background);
+		this.mc.renderEngine.bindTexture(dialog_background);
 	    drawTexturedModalRect(screenWidth - 160, 32, 0, 0, 160, 64);
 	}
 	
@@ -83,7 +82,6 @@ public class GuiEventIndicator extends Gui {
 		
 		int linesTotal 		= (int)Math.floor(height / lineHeight);
 		int linesAvailable 	= linesTotal;
-		int linesNeeded 	= 0;
 		int offset			= 0;
 		for (int i = 0; i < lines.length; i++) {
 			offset = lineHeight * (linesTotal - linesAvailable);
