@@ -1,13 +1,41 @@
-/cpw/
-/ibxm/
-/net/
-/paulscode/
+# Eclipse
 
-/deobfuscation_data-1.6.2.lzma
-/fml_at.cfg
-/fml_marker.cfg
-/fmlversion.properties
-/forge_at.cfg
-/forge_logo.png
-/Start.class
-/Start.java
+bin/
+*.launch
+.settings/
+.metadata
+.classpath
+.project
+
+*.tmp
+*.bak
+*.swp
+*~.nib
+
+
+# IntelliJ Idea
+
+out/
+*.ipr
+*.iws
+*.iml
+.idea/
+
+
+# Gradle
+
+build/
+.gradle/
+gradle/wrapper/gradle-wrapper.jar
+gradlew
+
+# Other
+
+eclipse/
+run/
+*.txt
+
+# Windows
+
+Thumbs.db
+Desktop.ini
