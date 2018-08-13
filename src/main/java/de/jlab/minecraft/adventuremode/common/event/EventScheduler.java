@@ -9,7 +9,6 @@ import de.jlab.minecraft.adventuremode.common.config.AdventureConfig;
 import de.jlab.minecraft.adventuremode.common.network.AdventureNetworkHandler;
 import de.jlab.minecraft.adventuremode.common.network.EventMessage;
 import de.jlab.minecraft.adventuremode.utils.ChanceCalculator;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.world.World;
