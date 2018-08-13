@@ -124,9 +124,7 @@ public class InvasionEvent extends PositionalEvent {
 		int maxSpawnRadius = AdventureConfig.events.invasion.spawnRadiusMax;
 		int minSpawnRadius = AdventureConfig.events.invasion.spawnRadiusMin;
 		this.spawnHelper.setRandomCircleSpawnPosition(entity, this.getPosition(), minSpawnRadius, maxSpawnRadius);
-		
-		System.out.println("Spawning monster " + (entityliving == null ? "Unknown" : entityliving.getName()));
-		
+			
 		int l = this.getWorld().getLightFor(EnumSkyBlock.BLOCK, entity.getPosition().down());
 		// abort spawning if conditions are not met and light level is above 10 (thunderstorm)
 		if (!entityliving.getCanSpawnHere() || l > 10) {

@@ -93,9 +93,7 @@ public class EventScheduler {
 	    		resultList.add(event);
 	    	}
 	    }
-	    
-	    //System.out.println(resultList.size() + " / " + this.eventCache.length);
-	    
+	        
 	    return resultList;
 	}
 	
@@ -215,9 +213,7 @@ public class EventScheduler {
 					EventScheduler.this.eventList.remove(event);
 				}
 			}
-			
-			System.out.println("Received EventMessage: " + message.getType() + " / " + message.getEvents().length);
-			
+					
 			EventScheduler.this.refreshEventCache();
 			
 			return null;
@@ -241,13 +237,11 @@ public class EventScheduler {
 			if (System.currentTimeMillis() - this.eventUpdateTime >= AdventureConfig.events.eventUpdateRate * 1000l) {
 				this.updateEvents(event.world);
 				this.eventUpdateTime = System.currentTimeMillis();
-				System.out.println("EVENT UPDATE");
 			}
 			// reset generatorDelay if delay has passed
 			if (System.currentTimeMillis() - this.generatorUpdateTime >= AdventureConfig.events.generatorUpdateRate * 1000l) {
 				this.updateGenerators(event.world);
 				this.generatorUpdateTime = System.currentTimeMillis();
-				System.out.println("GENERATOR UPDATE");
 			}		
 		}
 	}
