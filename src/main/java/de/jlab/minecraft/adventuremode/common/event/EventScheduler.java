@@ -93,6 +93,9 @@ public class EventScheduler {
 	    		resultList.add(event);
 	    	}
 	    }
+	    
+	    //System.out.println(resultList.size() + " / " + this.eventCache.length);
+	    
 	    return resultList;
 	}
 	
@@ -206,15 +209,16 @@ public class EventScheduler {
 			}
 			for (Event event : message.getEvents()) {
 				if (type == EventMessage.TYPE_UPDATE || type == EventMessage.TYPE_STARTED) {
-					if (event instanceof PositionalEvent && Minecraft.getMinecraft().world.provider.getDimensionType().equals(((PositionalEvent)event).getDimensionType())) {
-						continue;
-					}
 					EventScheduler.this.eventList.add(event);
 				}
 				else {
 					EventScheduler.this.eventList.remove(event);
 				}
 			}
+			
+			System.out.println("Received EventMessage: " + message.getType() + " / " + message.getEvents().length);
+			
+			EventScheduler.this.refreshEventCache();
 			
 			return null;
 		}
