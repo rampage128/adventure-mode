@@ -112,7 +112,7 @@ public class EventScheduler {
 				generator.startEvent(event, player);
 				this.eventList.add(event);
 				refreshEventCache();
-				if (Side.SERVER == FMLCommonHandler.instance().getEffectiveSide()) {
+				if (Side.SERVER == FMLCommonHandler.instance().getSide()) {
 					AdventureNetworkHandler.INSTANCE.sendTo(new EventMessage(EventMessage.TYPE_STARTED, event), (EntityPlayerMP)player);
 				}
 			}
@@ -129,7 +129,7 @@ public class EventScheduler {
 				AdventureMode.logger.info("Stopping event [" + event.getGenerator().getType() + "] at [" + event.getPosition() + "]");
 				event.end();
 				eventIterator.remove();
-				if (Side.SERVER == FMLCommonHandler.instance().getEffectiveSide()) {
+				if (Side.SERVER == FMLCommonHandler.instance().getSide()) {
 					AdventureNetworkHandler.INSTANCE.sendToAll(new EventMessage(EventMessage.TYPE_ENDED, event));
 				}
 			} else {
@@ -164,6 +164,7 @@ public class EventScheduler {
 			refreshEventCache();
 		}
 		
+		AdventureMode.logger.info("BARGL!");
 		if (Side.SERVER == FMLCommonHandler.instance().getSide()) {
 			AdventureNetworkHandler.INSTANCE.sendToAll(new EventMessage(EventMessage.TYPE_UPDATE, this.eventCache));
 		}
@@ -222,7 +223,9 @@ public class EventScheduler {
 	
 	@SideOnly(Side.SERVER)
 	public void onPlayerLogin(EntityPlayerMP player) {
-		AdventureNetworkHandler.INSTANCE.sendTo(new EventMessage(EventMessage.TYPE_UPDATE, this.eventList.toArray(new Event[0])), player);
+		if (Side.SERVER == FMLCommonHandler.instance().getSide()) {
+			AdventureNetworkHandler.INSTANCE.sendTo(new EventMessage(EventMessage.TYPE_UPDATE, this.eventList.toArray(new Event[0])), player);
+		}
 	}
 	
 	  /////////////////////////
