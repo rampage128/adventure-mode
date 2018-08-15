@@ -3,16 +3,26 @@ package de.jlab.minecraft.adventuremode.common.config;
 import java.util.HashMap;
 
 import de.jlab.minecraft.adventuremode.AdventureMode;
-import de.jlab.minecraft.adventuremode.common.event.EventType;
 import net.minecraftforge.common.config.Config;
+import net.minecraftforge.common.config.ConfigManager;
 import net.minecraftforge.common.config.Config.Comment;
 import net.minecraftforge.common.config.Config.Name;
 import net.minecraftforge.common.config.Config.RangeInt;
 import net.minecraftforge.common.config.Config.RequiresWorldRestart;
+import net.minecraftforge.fml.client.event.ConfigChangedEvent.OnConfigChangedEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 @Config(modid = AdventureMode.MODID, category = "")
 public class AdventureConfig {
 
+    @SubscribeEvent
+    public static void onConfigChangedEvent(OnConfigChangedEvent event) {
+        if (event.getModID().equals(AdventureMode.MODID)) {
+            ConfigManager.sync(AdventureMode.MODID, Config.Type.INSTANCE);
+            AdventureMode.instance.getEventScheduler().updateConfig();
+        }
+    }
+	
 	public static Items items = new Items();
 	
 	public static Events events = new Events();
@@ -40,21 +50,13 @@ public class AdventureConfig {
 		@Comment("Minimum distance between two events (in meters)")
 		@RangeInt(min = 1, max = 10)
 		public int eventMinDistance = 600;
-		
-		@Comment({ 
-			"List of possible event types. Use this to disable events you do not like.",
-			"Possible values: INVASION, BOSS"
-		})
-		public EventType[] possibleEventTypes = { 
-			EventType.BOSS,
-			EventType.INVASION
-		};
-		
-		public EventType testType = EventType.BOSS;
-		
+			
 		public Boss boss = new Boss();
 		
 		public static class Boss {
+			@Comment("Determines if boss events should be enabled.")
+			public boolean enabled = true;
+			
 			@Comment("Cooldown (in seconds) before the next boss event can start")
 			public int cooldown = 180;
 			
@@ -95,6 +97,9 @@ public class AdventureConfig {
 		public Invasion invasion = new Invasion();
 		
 		public static class Invasion {
+			@Comment("Determines if invasion events should be enabled.")
+			public boolean enabled = true;
+			
 			@Comment("Cooldown (in seconds) before the next invasion can start")
 			public int cooldown = 3600;
 			

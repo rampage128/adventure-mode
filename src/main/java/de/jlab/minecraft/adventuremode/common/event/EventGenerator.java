@@ -19,6 +19,8 @@ public abstract class EventGenerator {
 	 */
 	public abstract double getChance(EntityPlayer player);
 	
+	public abstract boolean isEnabled();
+	
 	public final void startEvent(Event event, EntityPlayer player) {
 		AdventureMode.logger.info("Starting event [" + event.getClass().getSimpleName() + "] at player [" + player.getName() + "]");
 		event.init(player);

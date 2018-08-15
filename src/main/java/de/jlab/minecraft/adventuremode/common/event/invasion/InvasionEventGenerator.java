@@ -83,12 +83,17 @@ public class InvasionEventGenerator extends EventGenerator {
 
 	@Override
 	public void reset() {
-		this.lastInvasion 		= 0;
+		this.lastInvasion = 0;
 	}
 
 	@Override
 	protected void onEventStarted(Event event, EntityPlayer player) {
 		this.lastInvasion = player.getEntityWorld().getTotalWorldTime();
+	}
+
+	@Override
+	public boolean isEnabled() {
+		return AdventureConfig.events.invasion.enabled;
 	}
 
 }

@@ -15,13 +15,13 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 import net.minecraftforge.fml.common.gameevent.TickEvent.WorldTickEvent;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 @Mod.EventBusSubscriber(modid=AdventureMode.MODID)
 public class EventScheduler {
@@ -30,7 +30,6 @@ public class EventScheduler {
 	
 	private long eventUpdateTime = 0;
 	private long generatorUpdateTime = 0;
-	private EventType[] possibleEventTypes = {};
 	private ArrayList<EventGenerator> generatorList = new ArrayList<EventGenerator>();
 	private ChanceCalculator eventChance = new ChanceCalculator();
 	
@@ -42,16 +41,16 @@ public class EventScheduler {
 	}
 	
 	public void updateConfig() {
-		if (!this.possibleEventTypes.equals(AdventureConfig.events.possibleEventTypes)) {
-			this.possibleEventTypes = AdventureConfig.events.possibleEventTypes;
-			
-			for (EventType eventType : possibleEventTypes) {
-				try {
-					EventGenerator generator = eventType.getGenerator();
+		System.out.println("UPDATE CONFIG");
+		this.generatorList.clear();
+		for (EventType eventType : EventType.values()) {
+			try {
+				EventGenerator generator = eventType.getGenerator();
+				if (generator.isEnabled()) {
 					this.generatorList.add(generator);
-				} catch (Exception e) {
-					AdventureMode.logger.error("Could not load EventGenerator [" + eventType.name() + "]!", e);
 				}
+			} catch (Exception e) {
+				AdventureMode.logger.error("Could not load EventGenerator [" + eventType.name() + "]!", e);
 			}
 		}
 	}
@@ -221,12 +220,13 @@ public class EventScheduler {
 		
 	};
 	
-	@SideOnly(Side.SERVER)
-	public void onPlayerLogin(EntityPlayerMP player) {
-		if (Side.SERVER == FMLCommonHandler.instance().getSide()) {
-			AdventureNetworkHandler.INSTANCE.sendTo(new EventMessage(EventMessage.TYPE_UPDATE, this.eventList.toArray(new Event[0])), player);
+    @SubscribeEvent
+    public void onPlayerLoggedIn(PlayerLoggedInEvent event) {
+    	System.out.println("HUIUI");
+    	if (Side.SERVER == FMLCommonHandler.instance().getSide()) {
+			AdventureNetworkHandler.INSTANCE.sendTo(new EventMessage(EventMessage.TYPE_UPDATE, this.eventList.toArray(new Event[0])), (EntityPlayerMP)event.player);
 		}
-	}
+    }
 	
 	  /////////////////////////
      /// TickHandler stuff ///

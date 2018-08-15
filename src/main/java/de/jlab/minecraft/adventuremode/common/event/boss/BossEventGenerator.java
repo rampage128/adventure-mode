@@ -62,7 +62,12 @@ public class BossEventGenerator extends EventGenerator {
 
 	@Override
 	public void reset() {
+		this.lastBossEvent = 0;
+	}
 
+	@Override
+	public boolean isEnabled() {
+		return AdventureConfig.events.boss.enabled;
 	}
 
 }

@@ -3,11 +3,11 @@ package de.jlab.minecraft.adventuremode;
 import org.apache.logging.log4j.Logger;
 
 import de.jlab.minecraft.adventuremode.common.commands.EventCommand;
+import de.jlab.minecraft.adventuremode.common.config.AdventureConfig;
 import de.jlab.minecraft.adventuremode.common.event.EventScheduler;
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Config;
 import net.minecraftforge.common.config.ConfigManager;
-import net.minecraftforge.fml.client.event.ConfigChangedEvent.OnConfigChangedEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
@@ -15,8 +15,6 @@ import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 
 @Mod(modid = AdventureMode.MODID, name = AdventureMode.NAME, version = AdventureMode.VERSION)
 //@NetworkMod(clientSideRequired = true, serverSideRequired = true)
@@ -50,24 +48,11 @@ public class AdventureMode {
     	ConfigManager.sync(MODID, Config.Type.INSTANCE);
     	this.eventScheduler.updateConfig();
     	proxy.init(event);
+    	MinecraftForge.EVENT_BUS.register(AdventureConfig.class);
     }
-   
-    @SubscribeEvent
-    public void onConfigChangedEvent(OnConfigChangedEvent event) {
-        if (event.getModID().equals(MODID)) {
-            ConfigManager.sync(MODID, Config.Type.INSTANCE);
-            this.eventScheduler.updateConfig();
-        }
-    }
-    
-    @SubscribeEvent
-    public void onPlayerLoggedIn(PlayerLoggedInEvent event) {
-    	eventScheduler.onPlayerLogin((EntityPlayerMP)event.player);
-    }
-    
+         
     @EventHandler
     public void serverStarting(FMLServerStartingEvent event) {
-    	logger.info("STARTING SERVER");
     	event.registerServerCommand(new EventCommand());
     	proxy.serverStarting(event);
     }
