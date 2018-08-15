@@ -41,7 +41,6 @@ public class EventScheduler {
 	}
 	
 	public void updateConfig() {
-		System.out.println("UPDATE CONFIG");
 		this.generatorList.clear();
 		for (EventType eventType : EventType.values()) {
 			try {
@@ -163,7 +162,6 @@ public class EventScheduler {
 			refreshEventCache();
 		}
 		
-		AdventureMode.logger.info("BARGL!");
 		if (Side.SERVER == FMLCommonHandler.instance().getSide()) {
 			AdventureNetworkHandler.INSTANCE.sendToAll(new EventMessage(EventMessage.TYPE_UPDATE, this.eventCache));
 		}
@@ -222,7 +220,6 @@ public class EventScheduler {
 	
     @SubscribeEvent
     public void onPlayerLoggedIn(PlayerLoggedInEvent event) {
-    	System.out.println("HUIUI");
     	if (Side.SERVER == FMLCommonHandler.instance().getSide()) {
 			AdventureNetworkHandler.INSTANCE.sendTo(new EventMessage(EventMessage.TYPE_UPDATE, this.eventList.toArray(new Event[0])), (EntityPlayerMP)event.player);
 		}
