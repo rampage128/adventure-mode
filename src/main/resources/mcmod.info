@@ -1,0 +1,16 @@
+[
+{
+  "modid": "adventuremode",
+  "name": "Adventure Mode",
+  "description": "Vanilla style adventure add on.",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "http://adventuremode.on-a-rampage.net/",
+  "updateUrl": "",
+  "authorList": ["Frederik Wolter"],
+  "credits": "",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
