@@ -55,7 +55,7 @@ __Please make sure to read the [requirements](#requirements) above__!
 
 ## Contribute
 
-Feel free to [open an issue](https://github.com/rampage128/rampage128/issues) or submit a PR
+Feel free to [open an issue](https://github.com/rampage128/adventuremode/issues) or submit a PR
 
 Also, if you like this or other of my projects, please feel free to support me using the Link below.
 
