@@ -63,7 +63,7 @@ public class InvasionEvent extends PositionalEvent {
 		}
 		
 		// is inactive if killlimit is reached
-		if (this.kills > this.limitkills) {
+		if (this.kills >= this.limitkills) {
 			return false;
 		}
 		
