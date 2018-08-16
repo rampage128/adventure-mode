@@ -1,6 +1,6 @@
 {
     "parent": "item/handheld",
     "textures": {
-        "layer0": "minecraft:items/iron_sledgehammer"
+        "layer0": "adventuremode:items/iron_sledgehammer"
 	}
 }
