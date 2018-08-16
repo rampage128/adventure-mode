@@ -103,7 +103,7 @@ public class BossEvent extends PositionalEvent {
 			return null;
 		}
 
-		EntityRespawn respawn = new EntityRespawn(entityliving, 5);
+		EntityRespawn respawn = new EntityRespawn(entityliving, 0);
 		this.respawnList.add(respawn);
 		
 		return entityliving;
