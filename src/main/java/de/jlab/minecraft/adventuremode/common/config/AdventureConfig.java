@@ -77,8 +77,8 @@ public class AdventureConfig {
 			public HashMap<String, Double> bossTypes = BOSS_TYPES;
 						
 			static {
-				BOSS_TYPES.put("minecraft:witch", 70d);
-				BOSS_TYPES.put("minecraft:giant", 30d);
+				BOSS_TYPES.put("minecraft:witch", 60d);
+				BOSS_TYPES.put("minecraft:wither_skeleton", 40d);
 	        }
 			
 			
