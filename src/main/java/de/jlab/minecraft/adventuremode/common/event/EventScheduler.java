@@ -107,8 +107,12 @@ public class EventScheduler {
 		for (EventGenerator generator : this.generatorList) {
 			if (generator.getType().equalsIgnoreCase(type)) {
 				Event event = generator.createEvent();
-				generator.startEvent(event, player);
-				this.eventList.add(event);
+				if (generator.startEvent(event, player)) {
+					this.eventList.add(event);
+				}
+				else {
+					event.end();
+				}
 				refreshEventCache();
 				if (Side.SERVER == FMLCommonHandler.instance().getSide()) {
 					AdventureNetworkHandler.INSTANCE.sendTo(new EventMessage(EventMessage.TYPE_STARTED, event), (EntityPlayerMP)player);
@@ -151,8 +155,12 @@ public class EventScheduler {
 					Event event = generator.createEvent();
 					if (mayCreateEvent(event)) {
 						eventStarted = true;
-						generator.startEvent(event, player);
-						this.eventList.add(event);
+						if (generator.startEvent(event, player)) {
+							this.eventList.add(event);
+						}
+						else {
+							event.end();
+						}
 					}
 				}
 			}

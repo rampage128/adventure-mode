@@ -51,7 +51,7 @@ public abstract class Event {
 	/**
 	 * Start the event
 	 */
-	public abstract void start();
+	public abstract boolean start();
 	
 	/**
 	 * update this event

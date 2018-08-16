@@ -18,6 +18,7 @@ import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
 
 public class BossEvent extends PositionalEvent {
 
@@ -41,7 +42,7 @@ public class BossEvent extends PositionalEvent {
 				AdventureConfig.events.boss.maxAdds, 30, 70);
 	}
 
-	private void spawnboss() {
+	private boolean spawnboss() {
 		// create entity by chance
 		HashMap<String, Double> bossTypes = AdventureConfig.events.boss.bossTypes;
 		Entity entity = this.spawnHelper.getRandomEntity(bossTypes, "minecraft:witch",
@@ -49,32 +50,35 @@ public class BossEvent extends PositionalEvent {
 
 		EntityLiving entityliving = entity instanceof EntityLiving ? (EntityLiving) entity : null;
 
-		// return if entity is not a monster
-		if (entityliving == null) {
-			return;
-		}
-
-		// compute spawn position
-		this.spawnHelper.setRandomCircleSpawnPosition(entity, this.getPlayer().getPosition(), 16, 32);
-		// this.spawnHelper.setSpawnPosition(entity,
-		// Vec3.createVectorHelper(this.getPlayer().posX, this.getPlayer().posY,
-		// this.getPlayer().posZ), 8);
-
-		// abort spawning if conditions are not met
-		// if (!entityliving.getCanSpawnHere()) {
-		// return;
-		// }
-
-		// spawn monster
-		this.spawnHelper.spawnEntityLiving(entityliving);
-
-		// set aggro to nearest player
-		this.spawnHelper.autoAggro(entityliving, 40);
-
 		// set boss
 		this.boss = entityliving;
+		
+		// return if entity is not a monster
+		if (entityliving == null) {
+			return false;
+		}
+		
+		// compute spawn position with 10 retries
+		BlockPos spawnPosition = null;
+		for (int i = 0; i < 10 && spawnPosition == null; i++) {
+			spawnPosition = this.spawnHelper.getRandomCircleSpawnPosition(this.getWorld(), this.getPlayer().getPosition(), 16, 32, (int)Math.ceil(entityliving.height));
+		}
 
+		// no suitable spawn position found
+		if (spawnPosition == null) {
+			return false;
+		}
+		
+		// spawn monster
+		this.spawnHelper.spawnEntityLiving(entityliving, spawnPosition);
+
+		// set aggro to nearest player
+		this.spawnHelper.autoAggro(entityliving, this.getRadius());
+
+		// move event position to the boss
 		this.setPosition(this.boss.getPosition());
+		
+		return true;
 	}
 
 	private void spawnadds() {
@@ -86,36 +90,39 @@ public class BossEvent extends PositionalEvent {
 		}
 	}
 
-	private EntityLiving createAdd() {
+	private EntityLiving createAdd() {		
 		// create entity by chance
 		HashMap<String, Double> addTypes = AdventureConfig.events.boss.addTypes;
 		Entity entity = this.spawnHelper.getRandomEntity(addTypes, "minecraft:zombie",
 				this.getPlayer().getEntityWorld());
 
 		EntityLiving entityliving = entity instanceof EntityLiving ? (EntityLiving) entity : null;
-
+	
 		// return if entity is not a monster
 		if (entityliving == null) {
 			return null;
 		}
 
-		return spawnAdd(entityliving);
+		EntityRespawn respawn = new EntityRespawn(entityliving, 5);
+		this.respawnList.add(respawn);
+		
+		return entityliving;
 	}
 
 	private EntityLiving spawnAdd(EntityLiving add) {
 		// compute spawn position
-		this.spawnHelper.setSpawnPosition(add, this.getPosition(), 3);
+		BlockPos spawnPosition = this.spawnHelper.getRandomCircleSpawnPosition(this.getWorld(), this.getPosition(), 4, 8, (int)Math.ceil(add.height));
 
 		// abort spawning if conditions are not met
-		if (!add.getCanSpawnHere()) {
+		if (spawnPosition == null) {
 			return null;
 		}
 
 		// spawn monster
-		this.spawnHelper.spawnEntityLiving(add);
+		this.spawnHelper.spawnEntityLiving(add, spawnPosition);
 
 		// set aggro to nearest player
-		this.spawnHelper.autoAggro(add, -1);
+		this.spawnHelper.autoAggro(add, this.getRadius());
 
 		return add;
 	}
@@ -127,9 +134,10 @@ public class BossEvent extends PositionalEvent {
 	}
 
 	@Override
-	public void start() {
-		this.spawnboss();
+	public boolean start() {
+		boolean success = this.spawnboss();
 		this.spawnadds();
+		return success;
 	}
 
 	@Override

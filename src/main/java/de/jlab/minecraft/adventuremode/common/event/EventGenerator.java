@@ -21,10 +21,10 @@ public abstract class EventGenerator {
 	
 	public abstract boolean isEnabled();
 	
-	public final void startEvent(Event event, EntityPlayer player) {
+	public final boolean startEvent(Event event, EntityPlayer player) {
 		AdventureMode.logger.info("Starting event [" + event.getClass().getSimpleName() + "] at player [" + player.getName() + "]");
 		event.init(player);
-		event.start();
+		return event.start();
 	}
 	
 	protected abstract void onEventStarted(Event event, EntityPlayer player);

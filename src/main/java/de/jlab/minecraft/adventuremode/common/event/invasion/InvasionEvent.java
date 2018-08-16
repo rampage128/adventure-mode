@@ -13,6 +13,7 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.EnumSkyBlock;
 
 public class InvasionEvent extends PositionalEvent {
@@ -76,10 +77,10 @@ public class InvasionEvent extends PositionalEvent {
 	}
 
 	@Override
-	public void start() {
+	public boolean start() {
 		this.startTime 	= this.getWorld().getTotalWorldTime();
 		this.timeleft 	= this.limittime;
-		//Minecraft.getMinecraft().theWorld.provider.setSkyRenderer(new InvasionSkyRenderer());
+		return true;
 	}
 	
 	@Override
@@ -123,16 +124,20 @@ public class InvasionEvent extends PositionalEvent {
 		// compute spawn position
 		int maxSpawnRadius = AdventureConfig.events.invasion.spawnRadiusMax;
 		int minSpawnRadius = AdventureConfig.events.invasion.spawnRadiusMin;
-		this.spawnHelper.setRandomCircleSpawnPosition(entity, this.getPosition(), minSpawnRadius, maxSpawnRadius);
-			
-		int l = this.getWorld().getLightFor(EnumSkyBlock.BLOCK, entity.getPosition().down());
-		// abort spawning if conditions are not met and light level is above 10 (thunderstorm)
-		if (!entityliving.getCanSpawnHere() || l > 10) {
+		BlockPos spawnPosition = this.spawnHelper.getRandomCircleSpawnPosition(this.getWorld(), this.getPosition(), minSpawnRadius, maxSpawnRadius, (int)Math.ceil(entityliving.height));
+		if (spawnPosition == null) {
 			return;
 		}
-				
+		
+		
+		int l = this.getWorld().getLightFor(EnumSkyBlock.BLOCK, spawnPosition);
+		// abort spawning if light level is above 10 (thunderstorm)
+		if (l > 10) {
+			return;
+		}
+		
 		// spawn monster
-		this.spawnHelper.spawnEntityLiving(entityliving);
+		this.spawnHelper.spawnEntityLiving(entityliving, spawnPosition);
 		
 		// set aggro to nearest player
 		this.spawnHelper.autoAggro(entityliving, maxSpawnRadius);
