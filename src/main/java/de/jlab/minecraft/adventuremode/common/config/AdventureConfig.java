@@ -7,6 +7,7 @@ import net.minecraftforge.common.config.Config;
 import net.minecraftforge.common.config.ConfigManager;
 import net.minecraftforge.common.config.Config.Comment;
 import net.minecraftforge.common.config.Config.Name;
+import net.minecraftforge.common.config.Config.RangeDouble;
 import net.minecraftforge.common.config.Config.RangeInt;
 import net.minecraftforge.common.config.Config.RequiresWorldRestart;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent.OnConfigChangedEvent;
@@ -61,9 +62,9 @@ public class AdventureConfig {
 			@Comment("Cool down (in seconds) before the next boss event can start.")
 			public int cooldown = 180;
 			
-			@Comment("Probabilities for a boss event (in percent): any time, moon fullness * value, thunderstorm, thunderstorm & full moon.")
-			public double[] chances = { 0.5, 10, 20, 60 };
-			
+			@Comment("Configure probabilities of appearance for boss events.")		
+			public Probabilities probabilities = new Probabilities(); 
+						
 			@Comment("Minimum number of adds escorting the boss.")
 			@RangeInt(min = 0, max = 20)
 			public int minAdds = 2;
@@ -103,9 +104,9 @@ public class AdventureConfig {
 			
 			@Comment("Cool down (in seconds) before the next invasion can start.")
 			public int cooldown = 3600;
-			
-			@Comment("Probabilities for Invasion (in percent): any time, moon fullness * value, thunderstorm, thunderstorm & full moon")
-			public double[] chances = { 0.5, 10, 20, 60 };
+					
+			@Comment("Configure probabilities of appearance for invasion events.")		
+			public Probabilities probabilities = new Probabilities(); 
 			
 			@Comment("Closest possible spawn distance (in meters) of monsters in an invasion.")
 			@RangeInt(min = 5, max = 128)
@@ -154,6 +155,25 @@ public class AdventureConfig {
 			@Comment("Determines if remaining mobs will be despawned when invasion ends (boolean).")
 			public boolean despawnOnEnd = true;
 		}
+	}
+	
+	public static class Probabilities {
+		@Comment("Probability for an event at any given time.")
+		@RangeDouble(min = 0, max = 100)
+		public double anyTime = 0.5;
+		@Comment({ 
+			"Probability based on moon fullness (if moon is at least quarter full).", 
+			"This is multiplied with the factor of moon fullness:",
+			"For a probability of 10% at half moon => 10% * 0.5 = 5%"
+			})
+		@RangeDouble(min = 0, max = 100)
+		public double moonFactor = 10;
+		@Comment("Probability for an event during thunderstorms.")
+		@RangeDouble(min = 0, max = 100)
+		public double thunderstorm = 20;
+		@Comment("Probability for an event during thunderstorms at full moon.")
+		@RangeDouble(min = 0, max = 100)
+		public double fullMoonThunderstorm = 60;
 	}
 	
 }

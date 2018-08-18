@@ -150,8 +150,8 @@ public class EventScheduler {
 		List<EntityPlayer> playerList = world.playerEntities;
 		for (EntityPlayer player: playerList) {
 			for (EventGenerator generator : this.generatorList) {
-				double chance = generator.getChance(player);
-				if (chance > 0 && eventChance.calculateChance(chance)) {
+				double probability = generator.getProbability(player);
+				if (probability > 0 && eventChance.calculateChance(probability)) {
 					Event event = generator.createEvent();
 					if (mayCreateEvent(event)) {
 						eventStarted = true;

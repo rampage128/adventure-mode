@@ -19,7 +19,7 @@ public class InvasionEventGenerator extends EventGenerator {
 	}
 
 	@Override
-	public double getChance(EntityPlayer player) {
+	public double getProbability(EntityPlayer player) {
 		World world = player.getEntityWorld();
 		// initialize spawning criteria with daytime or thunderstorm
 		if (world.isDaytime() && !world.isThundering()) {
@@ -53,27 +53,27 @@ public class InvasionEventGenerator extends EventGenerator {
 		boolean isThundering = player.getEntityWorld().isThundering();
         
 		// retrieve chances from config
-		double[] chances = AdventureConfig.events.invasion.chances; //(double[])this.getConfigStore().getProperty(BossEventConfigStore.CATEGORY, BossEventConfigStore.PROPERTY_CHANCES);
+		AdventureConfig.Probabilities probabilities = AdventureConfig.events.invasion.probabilities;
 		
 		// get base chance
-		double chance = chances[0];
+		double probability = probabilities.anyTime;
         
         // get moon phase chance multiplied by moon fullness
 		if (moonFullness > 0.25f) {
-			chance = Math.max(chance, chances[1] * moonFullness);
+			probability = Math.max(probability, probabilities.moonFactor * moonFullness);
 		}
       	
         // get thunderstorm chance
         if (isThundering) {
-        	chance = chances[2];
+        	probability = probabilities.thunderstorm;
         }
         
         // get chance for thunderstorm & full moon
         if (isFullMoon && isThundering) {
-        	chance = chances[3];
+        	probability = probabilities.fullMoonThunderstorm;
         }
 		
-		return chance;
+		return probability;
 	}
 
 	@Override

@@ -13,11 +13,11 @@ public abstract class EventGenerator {
 	public abstract Event createEvent();
 	
 	/**
-	 * Calculates the general chance for an event to occur
+	 * Calculates the probability for an event to occur
 	 * @param player
 	 * @return
 	 */
-	public abstract double getChance(EntityPlayer player);
+	public abstract double getProbability(EntityPlayer player);
 	
 	public abstract boolean isEnabled();
 	
