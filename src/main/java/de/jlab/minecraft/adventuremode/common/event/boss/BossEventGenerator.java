@@ -16,8 +16,8 @@ public class BossEventGenerator extends EventGenerator {
 
 	@Override
 	public double getProbability(EntityPlayer player) {
-		// if we did check already and cooldown is not over yet we return 0 chance!
-		if (lastBossEvent != 0 && player.getEntityWorld().getTotalWorldTime() - lastBossEvent < AdventureConfig.events.boss.cooldown) {
+		// if we did check already and cool down is not over yet we return 0 chance!
+		if (lastBossEvent != 0 && player.getEntityWorld().getTotalWorldTime() - lastBossEvent < AdventureConfig.events.boss.cooldown * 60 * 20) {
 			return 0;
 		}
 				

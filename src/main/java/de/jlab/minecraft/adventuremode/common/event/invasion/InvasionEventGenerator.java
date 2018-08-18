@@ -42,8 +42,8 @@ public class InvasionEventGenerator extends EventGenerator {
 		// reset invadeable change flag
 		invadeableChanged = false;
 		
-		// check if cooldown is over
-		if (this.lastInvasion != 0 && world.getTotalWorldTime() - this.lastInvasion < AdventureConfig.events.invasion.cooldown * 20) {
+		// check if cool down is over
+		if (this.lastInvasion != 0 && world.getTotalWorldTime() - this.lastInvasion < AdventureConfig.events.invasion.cooldown * 60 * 20) {
 			return 0;
 		}
 		

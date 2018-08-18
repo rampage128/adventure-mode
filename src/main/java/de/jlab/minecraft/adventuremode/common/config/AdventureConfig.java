@@ -59,8 +59,8 @@ public class AdventureConfig {
 			@Comment("Determines if boss events should be enabled.")
 			public boolean enabled = true;
 			
-			@Comment("Cool down (in seconds) before the next boss event can start.")
-			public int cooldown = 7200;
+			@Comment("Cool down (in minutes) before the next boss event can start.")
+			public int cooldown = 120;
 			
 			@Comment("Configure probabilities of appearance for boss events.")		
 			public Probabilities probabilities = new Probabilities(); 
@@ -102,8 +102,8 @@ public class AdventureConfig {
 			@Comment("Determines if invasion events should be enabled.")
 			public boolean enabled = true;
 			
-			@Comment("Cool down (in seconds) before the next invasion can start.")
-			public int cooldown = 10800;
+			@Comment("Cool down (in minutes) before the next invasion can start.")
+			public int cooldown = 180;
 					
 			@Comment("Configure probabilities of appearance for invasion events.")		
 			public Probabilities probabilities = new Probabilities(); 
