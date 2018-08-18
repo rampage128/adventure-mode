@@ -13,6 +13,7 @@ import net.minecraftforge.fml.client.event.ConfigChangedEvent.OnConfigChangedEve
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 @Config(modid = AdventureMode.MODID, category = "")
+@Config.LangKey("adventuremode.config.title")
 public class AdventureConfig {
 
     @SubscribeEvent
@@ -30,24 +31,24 @@ public class AdventureConfig {
 	public static class Items {
 		@Name("replace_tools")
 		@RequiresWorldRestart
-		@Comment("Determines if vanilla tools will be replaced with adventure tools (boolean)")
+		@Comment("Replace vanilla shovel, axe, pickaxe and hoe.")
 		public boolean replaceTools = true;
 	}
 	
 	public static class Events {
-		@Comment("Maximum number of parallel events")
+		@Comment("Maximum number of parallel events.")
 		@RangeInt(min = 1, max = 10)
 		public int maxEvents = 5;
 		
-		@Comment("Updaterate for event generators (in seconds)")
+		@Comment("Updaterate for event generators (in seconds).")
 		@RangeInt(min = 1, max = 60 * 5)
 		public int generatorUpdateRate = 30;
 		
-		@Comment("Updaterate for events (in seconds)")
+		@Comment("Updaterate for events (in seconds).")
 		@RangeInt(min = 1, max = 10)
 		public int eventUpdateRate = 1;
 		
-		@Comment("Minimum distance between two events (in meters)")
+		@Comment("Minimum distance between two events (in meters).")
 		@RangeInt(min = 1, max = 10)
 		public int eventMinDistance = 600;
 			
@@ -57,23 +58,23 @@ public class AdventureConfig {
 			@Comment("Determines if boss events should be enabled.")
 			public boolean enabled = true;
 			
-			@Comment("Cooldown (in seconds) before the next boss event can start")
+			@Comment("Cool down (in seconds) before the next boss event can start.")
 			public int cooldown = 180;
 			
-			@Comment("Chances for a boss event (in percent): anytime, moon fullness * value, thunderstorm, thunderstorm & fullmoon")
+			@Comment("Probabilities for a boss event (in percent): any time, moon fullness * value, thunderstorm, thunderstorm & full moon.")
 			public double[] chances = { 0.5, 10, 20, 60 };
 			
-			@Comment("Minimum number of adds escorting the boss")
+			@Comment("Minimum number of adds escorting the boss.")
 			@RangeInt(min = 0, max = 20)
 			public int minAdds = 2;
 			
-			@Comment("Maximum number of adds escorting the boss")
+			@Comment("Maximum number of adds escorting the boss.")
 			@RangeInt(min = 0, max = 20)
 			public int maxAdds = 5;
 			
 			private static HashMap<String, Double> BOSS_TYPES = new HashMap<>();
 			
-			@Comment("List of boss names which should spawn during a boss event with a percentage of spawning chance")
+			@Comment("List of boss mob names which should spawn during a boss event with a percentage of spawning chance.")
 			public HashMap<String, Double> bossTypes = BOSS_TYPES;
 						
 			static {
@@ -84,7 +85,7 @@ public class AdventureConfig {
 			
 			private static HashMap<String, Double> ADD_TYPES = new HashMap<>();
 			
-			@Comment("List of monster names which should spawn as adds during a boss event with a percentage of spawning chance")
+			@Comment("List of mob names which should spawn as adds during a boss event with a percentage of spawning chance.")
 			public HashMap<String, Double> addTypes = ADD_TYPES;
 
 			static {
@@ -100,47 +101,47 @@ public class AdventureConfig {
 			@Comment("Determines if invasion events should be enabled.")
 			public boolean enabled = true;
 			
-			@Comment("Cooldown (in seconds) before the next invasion can start")
+			@Comment("Cool down (in seconds) before the next invasion can start.")
 			public int cooldown = 3600;
 			
-			@Comment("Chances for Invasion (in percent): anytime, moon fullness * value, thunderstorm, thunderstorm & fullmoon")
+			@Comment("Probabilities for Invasion (in percent): any time, moon fullness * value, thunderstorm, thunderstorm & full moon")
 			public double[] chances = { 0.5, 10, 20, 60 };
 			
-			@Comment("Closest possible spawn distance (in meters) of monsters in an invasion")
+			@Comment("Closest possible spawn distance (in meters) of monsters in an invasion.")
 			@RangeInt(min = 5, max = 128)
 			public int spawnRadiusMin = 16;
 			
-			@Comment("Greatest possible spawn distance (in meters) of monsters in an invasion")
+			@Comment("Greatest possible spawn distance (in meters) of monsters in an invasion.")
 			@RangeInt(min = 5, max = 128)
 			public int spawnRadiusMax = 48;
 			
-			@Comment("Shortest time-limit (in seconds) for an invasion to end")
+			@Comment("Shortest time-limit (in seconds) for an invasion to end.")
 			@RangeInt(min = 60, max = 86400)
 			public int timeLimitMin = 300;
 			
-			@Comment("Longest time-limit (in seconds) for an invasion to end")
+			@Comment("Longest time-limit (in seconds) for an invasion to end.")
 			@RangeInt(min = 60, max = 86400)
 			public int timeLimitMax = 1800;
 			
-			@Comment("Lowest kill-limit for an invasion to end")
+			@Comment("Lowest kill-limit for an invasion to end.")
 			@RangeInt(min = 10, max = 5000)
 			public int killLimitMin = 25;
 			
-			@Comment("Highest kill-limit for an invasion to end")
+			@Comment("Highest kill-limit for an invasion to end.")
 			@RangeInt(min = 10, max = 5000)
 			public int killLimitMax = 200;
 
-			@Comment("How many monsters may minimal exist at once in one invasion")
+			@Comment("How many mobs may minimal exist at once in one invasion.")
 			@RangeInt(min = 5, max = 300)
 			public int monsterLimitMin = 50;
 			
-			@Comment("How many monsters may maximal exist at once in one invasion")
+			@Comment("How many mobs may maximal exist at once in one invasion.")
 			@RangeInt(min = 5, max = 300)
 			public int monsterLimitMax = 100;
 
 			private static HashMap<String, Double> MONSTER_TYPES = new HashMap<>();
 			
-			@Comment("List of monster names which should spawn during an invasion with a percentage of spawning chance")
+			@Comment("List of mob names which should spawn during an invasion with a percentage of spawning chance.")
 			public HashMap<String, Double> monsterTypes = MONSTER_TYPES;
 						
 			static {
@@ -150,7 +151,7 @@ public class AdventureConfig {
 				MONSTER_TYPES.put("minecraft:pigzombie", 5d);
 	        }
 			
-			@Comment("Determines if monsters will be despawned when invasion ends (boolean)")
+			@Comment("Determines if remaining mobs will be despawned when invasion ends (boolean).")
 			public boolean despawnOnEnd = true;
 		}
 	}

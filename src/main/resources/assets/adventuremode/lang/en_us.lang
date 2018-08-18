@@ -1,3 +1,95 @@
+# Config GUI
+
+adventuremode.config.title
+
+adventuremode.items=Item configuration
+adventuremode.events=Event configuration
+
+adventuremode.items.replaceTools=Replace vanilla tools
+adventuremode.items.replaceTools.tooltip=Replace vanilla shovel, axe, pickaxe and hoe.
+
+adventuremode.events.maxevents=Max. parallel events
+adventuremode.events.maxevents.tooltip=Maximum number of parallel events.
+adventuremode.events.generatorupdaterate=Generator update rate
+adventuremode.events.generatorupdaterate.tooltip=Update rate for event generators (in seconds).
+adventuremode.events.eventupdaterate=Event update rate
+adventuremode.events.eventupdaterate.tooltip=Update rate for events (in seconds).
+adventuremode.events.eventmindistance=Min. event distance
+adventuremode.events.eventmindistance.tooltip=Minimum distance between two events (in meters).
+
+adventuremode.events.boss=Boss event configuration
+adventuremode.events.boss.tooltip=Toggle and configure behavior of boss events.
+adventuremode.events.boss.enabled=Enable
+adventuremode.events.boss.enabled.tooltip=Determines if boss events should be enabled.
+adventuremode.events.boss.cooldown=Cool down
+adventuremode.events.boss.cooldown.tooltip=Cool down (in seconds) before the next boss event can start.
+adventuremode.events.boss.chances=Probabilities
+adventuremode.events.boss.chances.tooltip=Probabilities for a boss event (in percent): any time, moon fullness * value, thunderstorm, thunderstorm & full moon.
+adventuremode.events.boss.minadds=Min. add mobs
+adventuremode.events.boss.minadds.tooltip=Minimum number of adds escorting the boss.
+adventuremode.events.boss.maxadds=Max. add mobs
+adventuremode.events.boss.maxadds.tooltip=Maximum number of adds escorting the boss.
+adventuremode.events.boss.bosstypes=Boss mob types
+adventuremode.events.boss.bosstypes.tooltip=List of boss mob names which should spawn during a boss event with a percentage of spawning chance.
+adventuremode.events.boss.addtypes=Add mob types
+adventuremode.events.boss.addtypes.tooltip=List of mob names which should spawn as adds during a boss event with a percentage of spawning chance.
+
+adventuremode.events.invasion=Invasion event configuration
+adventuremode.events.invasion.tooltip=Toggle and configure behavior of invasion events.
+adventuremode.events.invasion.enabled=Enable
+adventuremode.events.invasion.enabled.tooltip=Determines if invasion events should be enabled.
+adventuremode.events.invasion.cooldown=Cool down
+adventuremode.events.invasion.cooldown.tooltip=Cool down (in seconds) before the next invasion can start.
+adventuremode.events.invasion.chances=Probabilities
+adventuremode.events.invasion.chances.tooltip=Probabilities for Invasion (in percent): any time, moon fullness * value, thunderstorm, thunderstorm & full moon.
+adventuremode.events.invasion.spawnradiusmin=Min. spawn radius
+adventuremode.events.invasion.spawnradiusmin.tooltip=Closest possible spawn distance (in meters) of mobs in an invasion.
+adventuremode.events.invasion.spawnradiusmax=Max. spawn radius
+adventuremode.events.invasion.spawnradiusmax.tooltip=Greatest possible spawn distance (in meters) of mobs in an invasion.
+adventuremode.events.invasion.timelimitmin=Min. time limit
+adventuremode.events.invasion.timelimitmin.tooltip=Shortest time-limit (in seconds) for an invasion to end.
+adventuremode.events.invasion.timelimitmax=Max. time limit
+adventuremode.events.invasion.timelimitmax.tooltip=Longest time-limit (in seconds) for an invasion to end.
+adventuremode.events.invasion.killlimitmin=Min. kill limit
+adventuremode.events.invasion.killlimitmin.tooltip=Lowest kill-limit for an invasion to end.
+adventuremode.events.invasion.killlimitmax=Max. kill limit
+adventuremode.events.invasion.killlimitmax.tooltip=Highest kill-limit for an invasion to end.
+adventuremode.events.invasion.monsterlimitmin=Min. parallel mob count
+adventuremode.events.invasion.monsterlimitmin.tooltip=How many mobs may minimal exist at once in one invasion.
+adventuremode.events.invasion.monsterlimitmax=Max. parallel mob count
+adventuremode.events.invasion.monsterlimitmax.tooltip=How many mobs may maximal exist at once in one invasion.
+adventuremode.events.invasion.monstertypes=Mob types
+adventuremode.events.invasion.monstertypes.tooltip=List of mob names which should spawn during an invasion with a percentage of spawning chance.
+adventuremode.events.invasion.despawnonend=Despawn mobs on end
+adventuremode.events.invasion.despawnonend.tooltip=Determines if remaining mobs will be despawned when invasion ends (boolean).
+
+
+# Item names
+
+item.minecraft:wooden_shovel.name=Wooden Shovel (Adv)
+item.minecraft:stone_shovel.name=Stone Shovel (Adv)
+item.minecraft:iron_shovel.name=Iron Shovel (Adv)
+item.minecraft:golden_shovel.name=Golden Shovel (Adv)
+item.minecraft:diamond_shovel.name=Diamond Shovel (Adv)
+
+item.minecraft:wooden_axe.name=Wooden Axe (Adv)
+item.minecraft:stone_axe.name=Stone Axe (Adv)
+item.minecraft:iron_axe.name=Iron Axe (Adv)
+item.minecraft:golden_axe.name=Golden Axe (Adv)
+item.minecraft:diamond_axe.name=Diamond Axe (Adv)
+
+item.minecraft:wooden_pickaxe.name=Wooden Pickaxe (Adv)
+item.minecraft:stone_pickaxe.name=Stone Pickaxe (Adv)
+item.minecraft:iron_pickaxe.name=Iron Pickaxe (Adv)
+item.minecraft:golden_pickaxe.name=Golden Pickaxe (Adv)
+item.minecraft:diamond_pickaxe.name=Diamond Pickaxe (Adv)
+
+item.minecraft:wooden_hoe.name=Wooden Hoe (Adv)
+item.minecraft:stone_hoe.name=Stone Hoe (Adv)
+item.minecraft:iron_hoe.name=Iron Hoe (Adv)
+item.minecraft:golden_hoe.name=Golden Hoe (Adv)
+item.minecraft:diamond_hoe.name=Diamond Hoe (Adv)
+
 item.wooden_sledgehammer.name=Wooden Sledgehammer
 item.stone_sledgehammer.name=Stone Sledgehammer
 item.iron_sledgehammer.name=Iron Sledgehammer
