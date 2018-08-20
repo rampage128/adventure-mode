@@ -6,7 +6,7 @@
   "version": "${version}",
   "mcversion": "${mcversion}",
   "url": "http://adventuremode.on-a-rampage.net/",
-  "updateUrl": "",
+  "updateUrl": "https://raw.githubusercontent.com/rampage128/adventuremode/master/updates.json",
   "authorList": ["Frederik Wolter"],
   "credits": "",
   "logoFile": "",

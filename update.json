@@ -1,0 +1,12 @@
+{
+  "homepage": "http://adventuremode.on-a-rampage.net/#download",
+  "promos": 
+  {
+    "1.12.2-latest": "0.4.0",
+    "1.12.2-recommended": "0.4.0"
+  },
+  "1.12.2": 
+  {
+    "0.4.0": "Update to minecraft 1.12!" 
+  }
+}
