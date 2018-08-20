@@ -32,7 +32,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Reaching of event kill limit not triggering event ending.
 - Event message now scales in height depending on the amount of text shown.
  
-## [0.3.3] - 2013-09-22
+## 0.3.3 - 2013-09-22
 ### Added
 - adventure-pickaxe, which lasts 3 times longer and decreases working speed with damage.
 - adventure-axe, which lasts 3 times longer and decreases working speed with damage.
