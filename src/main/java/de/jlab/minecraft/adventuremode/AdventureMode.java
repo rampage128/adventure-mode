@@ -22,7 +22,7 @@ public class AdventureMode {
 	
 	public static final String MODID = "adventuremode";
     public static final String NAME = "Adventure Mode";
-    public static final String VERSION = "0.3.4";
+    public static final String VERSION = "0.4.0";
     
     public static Logger logger;
     
